@@ -91,7 +91,10 @@ The tests build a tiny fake copy of the dataset on disk with random images and c
 pipeline, the model, the metrics, a training run and the CLI. CI
 ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs lint and tests on every push and
 pull request. It installs the `cpu` dependency group (`uv sync --locked --no-dev --group cpu`),
-which swaps in the CPU-only PyTorch wheels instead of the multi-GB CUDA build.
+which swaps in the CPU-only PyTorch wheels instead of the multi-GB CUDA build, asserts that the
+installed torch is the `+cpu` build, and runs the same ruff and pytest commands with
+`UV_NO_SYNC=1` so that `uv run` keeps that environment instead of re-syncing to the default
+`dev` group.
 
 ```
 src/catdog/
