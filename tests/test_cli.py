@@ -83,3 +83,23 @@ def test_pick_examples_puts_most_confident_mistakes_last():
     assert len(picked) == 4
     assert picked[-2:] == [5, 1]
     assert set(picked[:2]) <= {0, 2, 4}
+
+
+def test_train_without_dataset_points_to_download(tmp_path, capsys):
+    checkpoint = tmp_path / "model.pt"
+    args = ["train", "--data-dir", str(tmp_path / "nodata"), "--checkpoint", str(checkpoint)]
+    assert main([*args, "--device", "cpu", "--num-workers", "0"]) == 2
+    assert "catdog download" in capsys.readouterr().err
+    assert not checkpoint.exists()
+
+
+def test_evaluate_without_dataset_points_to_download(tmp_path, checkpoint, capsys):
+    args = ["evaluate", "--data-dir", str(tmp_path / "nodata"), "--checkpoint", str(checkpoint)]
+    assert main([*args, "--out", str(tmp_path / "out"), "--device", "cpu"]) == 2
+    assert "catdog download" in capsys.readouterr().err
+
+
+def test_evaluate_missing_checkpoint_points_to_train(fake_pets, tmp_path, capsys):
+    args = ["evaluate", "--data-dir", str(fake_pets), "--checkpoint", str(tmp_path / "none.pt")]
+    assert main([*args, "--out", str(tmp_path / "out"), "--device", "cpu"]) == 2
+    assert "catdog train" in capsys.readouterr().err

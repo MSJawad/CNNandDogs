@@ -51,6 +51,9 @@ def load_split(data_dir: Path, split: str) -> OxfordIIITPet:
 
     Items are (PIL image, label); wrap the result in TransformedSubset to get tensors.
     """
+    base = Path(data_dir) / "oxford-iiit-pet"
+    if not all((base / d).is_dir() for d in ("images", "annotations")):
+        raise FileNotFoundError(f"dataset not found in {base} (fetch it with `catdog download`)")
     return OxfordIIITPet(data_dir, split=split, target_types="binary-category")
 
 

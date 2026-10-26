@@ -45,7 +45,15 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    try:
+        return run(args)
+    except FileNotFoundError as e:
+        print(f"error: {e}", file=sys.stderr)
+        return 2
 
+
+def run(args: argparse.Namespace) -> int:
+    """Run the parsed command; a missing dataset, checkpoint or image raises FileNotFoundError."""
     if args.command == "download":
         from catdog.data import download
 
@@ -83,14 +91,9 @@ def main(argv: list[str] | None = None) -> int:
 
         missing = [p for p in args.images if not p.is_file()]
         if missing:
-            print(f"error: no such file: {', '.join(map(str, missing))}", file=sys.stderr)
-            return 2
+            raise FileNotFoundError(f"no such file: {', '.join(map(str, missing))}")
         device = pick_device(args.device)
-        try:
-            model = load_model(args.checkpoint, device)
-        except FileNotFoundError as e:
-            print(f"error: {e}", file=sys.stderr)
-            return 2
+        model = load_model(args.checkpoint, device)
         try:
             predictions = predict_images(model, args.images, device)
         except OSError as e:

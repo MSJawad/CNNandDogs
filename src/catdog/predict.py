@@ -17,11 +17,18 @@ def format_prob(p: float) -> str:
 
 @torch.no_grad()
 def predict_images(
-    model: nn.Module, paths: Sequence[Path], device: torch.device
+    model: nn.Module, paths: Sequence[Path], device: torch.device, batch_size: int = 32
 ) -> list[tuple[str, float]]:
-    """Return (label, probability of that label) for each image file."""
+    """Return (label, probability of that label) per image, batch_size images per forward pass."""
     transform = eval_transform()
-    batch = torch.stack([transform(Image.open(p).convert("RGB")) for p in paths])
-    probs = torch.softmax(model.eval()(batch.to(device)), dim=1).cpu()
-    conf, idx = probs.max(dim=1)
-    return [(CLASSES[i], c) for i, c in zip(idx.tolist(), conf.tolist(), strict=True)]
+    model.eval()
+    predictions: list[tuple[str, float]] = []
+    for start in range(0, len(paths), batch_size):
+        chunk = paths[start : start + batch_size]
+        batch = torch.stack([transform(Image.open(p).convert("RGB")) for p in chunk])
+        probs = torch.softmax(model(batch.to(device)), dim=1).cpu()
+        conf, idx = probs.max(dim=1)
+        predictions.extend(
+            (CLASSES[i], c) for i, c in zip(idx.tolist(), conf.tolist(), strict=True)
+        )
+    return predictions

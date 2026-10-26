@@ -49,3 +49,8 @@ def test_download_removes_archives(tmp_path, monkeypatch):
     assert data.download(tmp_path) == base
     assert not list(base.glob("*.tar.gz"))
     assert (base / "images").is_dir()
+
+
+def test_load_split_without_dataset_points_to_download(tmp_path):
+    with pytest.raises(FileNotFoundError, match="catdog download"):
+        data.load_split(tmp_path, "trainval")

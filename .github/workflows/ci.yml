@@ -19,7 +19,7 @@ jobs:
           version: "0.8.17"
           enable-cache: true
       - name: Install
-        run: uv sync --locked
+        run: uv sync --locked --no-dev --group cpu
       - name: Lint
         run: |
           uv run ruff check .

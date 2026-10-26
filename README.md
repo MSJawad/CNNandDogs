@@ -13,7 +13,8 @@ confident about.</sub>
 ## Quick start
 
 Needs [uv](https://docs.astral.sh/uv/) (it installs Python 3.12 if missing). Runs on CPU,
-Apple Silicon (MPS) or CUDA, picked automatically.
+Apple Silicon (MPS) or CUDA, picked automatically. `uv sync` installs PyTorch's regular PyPI
+wheels, which include CUDA support on Linux; PyPI's Windows wheels are CPU-only.
 
 ```sh
 uv sync                    # install pinned dependencies into .venv
@@ -89,7 +90,8 @@ uv run ruff check . && uv run ruff format --check .
 The tests build a tiny fake copy of the dataset on disk with random images and cover the data
 pipeline, the model, the metrics, a training run and the CLI. CI
 ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs lint and tests on every push and
-pull request, using the CPU-only PyTorch wheels on Linux.
+pull request. It installs the `cpu` dependency group (`uv sync --locked --no-dev --group cpu`),
+which swaps in the CPU-only PyTorch wheels instead of the multi-GB CUDA build.
 
 ```
 src/catdog/
@@ -116,7 +118,7 @@ license, and the copyright of each image stays with its owner. The example photo
 ## History
 
 This repository started in 2019 as the cat vs dog CNN exercise from the Udemy course
-"Deep Learning A-Z" by Kirill Eremenko and Hadelin de Ponte (SuperDataScience): a small Keras
+"Deep Learning A-Z" by Kirill Eremenko and Hadelin de Ponteves (SuperDataScience): a small Keras
 network trained from scratch on 64x64 images. That course code no longer ran on current Keras
 and its dataset was not included, so it was replaced by this PyTorch rebuild. The original files
 remain in the git history.

@@ -16,20 +16,30 @@ dependencies = [
 catdog = "catdog.cli:main"
 
 [dependency-groups]
-dev = [
+tools = [
     "pytest==9.1.1",
     "ruff==0.17.0",
+]
+dev = [{ include-group = "tools" }]
+# The tools plus CPU-only PyTorch wheels, for CI: `uv sync --no-dev --group cpu`. The default
+# install (the dev group) uses PyPI's wheels, which include CUDA on Linux (a multi-GB download)
+# and MPS on macOS; declaring cpu and dev as conflicting keeps the two torch builds apart.
+cpu = [
+    { include-group = "tools" },
+    "torch",
+    "torchvision",
 ]
 
 [build-system]
 requires = ["uv_build>=0.8.17,<0.9"]
 build-backend = "uv_build"
 
-# Linux (CI) gets the CPU-only PyTorch wheels instead of the multi-GB CUDA build.
-# macOS uses the regular PyPI wheels, which include Apple MPS support.
+[tool.uv]
+conflicts = [[{ group = "cpu" }, { group = "dev" }]]
+
 [tool.uv.sources]
-torch = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]
-torchvision = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]
+torch = [{ index = "pytorch-cpu", group = "cpu" }]
+torchvision = [{ index = "pytorch-cpu", group = "cpu" }]
 
 [[tool.uv.index]]
 name = "pytorch-cpu"
