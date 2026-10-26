@@ -1,5 +1,7 @@
 # CNNandDogs
 
+[![CI](https://github.com/MSJawad/CNNandDogs/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/MSJawad/CNNandDogs/actions/workflows/ci.yml)
+
 A cat vs dog image classifier in PyTorch. It fine-tunes an ImageNet-pretrained ResNet-18 on the
 [Oxford-IIIT Pet](https://www.robots.ox.ac.uk/~vgg/data/pets/) dataset, reaching
 **99.2% accuracy** on the 3,669-image held-out test set after about 9 minutes of training on
