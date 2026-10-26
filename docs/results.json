@@ -1,0 +1,31 @@
+{
+  "split": "test",
+  "checkpoint": "checkpoints/catdog-resnet18.pt",
+  "accuracy": 0.9923684927773235,
+  "balanced_accuracy": 0.9899379041652697,
+  "per_class": {
+    "cat": {
+      "precision": 0.9931682322801024,
+      "recall": 0.9830938292476754,
+      "f1": 0.9881053525913339,
+      "support": 1183
+    },
+    "dog": {
+      "precision": 0.9919935948759008,
+      "recall": 0.996781979082864,
+      "f1": 0.9943820224719101,
+      "support": 2486
+    }
+  },
+  "confusion_matrix": [
+    [
+      1163,
+      20
+    ],
+    [
+      8,
+      2478
+    ]
+  ],
+  "n": 3669
+}
